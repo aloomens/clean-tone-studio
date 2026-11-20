@@ -1,0 +1,265 @@
+CLEAN TONE STUDIO {VERSION} - Quick Start (Windows 64-bit)
+==========================================================
+
+What's in this folder
+---------------------
+  Standalone\Clean Tone Studio.exe   The standalone app: play your guitar straight
+                                     through your ASIO sound card (no install needed)
+  VST3\Clean Tone Studio.vst3        The same thing as a plugin for Cubase or another
+                                     DAW (a folder - keep it whole)
+  Install VST3.bat                   Copies the plugin into C:\Program Files\Common Files\VST3
+  README.md                          Full manual: signal chain, every control, tests
+  MEASUREMENTS.md                    Measured distortion, aliasing, response, latency, CPU
+  LICENSE.txt                        GNU Affero General Public License version 3
+  THIRD-PARTY-NOTICES.txt            Licenses for included components
+
+Both run on any 64-bit Windows 10/11 PC. There's nothing else to install.
+
+License
+-------
+Clean Tone Studio is free software under the GNU Affero General Public
+License version 3 (LICENSE.txt). Copyright (C) 2026 Al Oomens.
+You may use it for anything and share it freely. When you share it, pass on
+this zip together with the source code zip
+(CleanToneStudio-{VERSION}-source.zip). It comes with NO WARRANTY.
+Click the CLEAN TONE STUDIO title in the app or plugin for the license notice.
+
+New in 1.6.1
+------------
+* The name is Clean Tone Studio again (1.6.0 was called "Open Clean Tone Studio").
+  It's still free software with the full source code. No change to the sound.
+* If you used 1.6.0, see "Upgrading from 1.6.0" below. From 1.5.2 or earlier there's
+  nothing to do: your presets, projects and sound card settings are where they were.
+
+New in 1.6.0
+------------
+* Released as free software (GNU AGPLv3). The full source code ships as a separate zip.
+  No change to the sound.
+* Click the title for the About box (version, copyright, license, no warranty).
+
+New in 1.5.2
+------------
+* TIGHT no longer lets very hot low notes jump in level (they could clip your interface in
+  the app with a hot input and a lot of Sustain). At normal playing levels nothing changes.
+
+New in 1.5.1
+------------
+* TIGHT works more cleanly: the deep lows now go around Warmth entirely, so there's no
+  extra low thump when you dig in on bright notes.
+
+New in 1.5.0 - four controls for a clearer sound (all off by default)
+------------
+* Clarity (next to Warmth): trims the muddy low mids only when they build up - chords,
+  the neck pickup, a boomy cabinet - and leaves a balanced tone alone. Try 40-70 %.
+* Pick (in SUSTAIN / DYNAMICS): turn up for more snap on each note, down for a softer,
+  rounder start. The rest of the note isn't changed. Handy with a lot of Sustain.
+* TIGHT (button next to TONE & CABINET): keeps the deep lows out of Warmth, so it adds
+  fullness without the low end getting boomy. Great with humbuckers or lots of Warmth.
+* Reverb Ducking: the reverb backs off while you play and blooms in the gaps.
+* Your existing presets and projects sound exactly as before.
+
+New in 1.4.2
+------------
+* Tempo for the delay's SYNC button. In the app, a tempo box and a TAP button sit next to
+  the delay's note-value menu: drag the box or double-click it to type a tempo, or tap
+  TAP in time with your song (it counts your taps; pause 2 seconds to start over). In
+  Cubase, Sync follows the project tempo and the box just shows it ("120.0 BPM - host").
+  The tempo is saved with your settings; presets don't change it.
+
+New in 1.4.1
+------------
+* IR Loader: new ALIGN button (on by default, next to the A / B slider). It makes each IR
+  start right away, so the IR Loader adds no delay, and lets two IRs blend without the low
+  end cancelling out. Each IR's tone stays exactly the same. Turn it off to use the IRs
+  exactly as recorded. Projects and presets from 1.4.0 keep sounding as they did.
+* Auto Level now gives the same result at 44.1, 48 and 96 kHz.
+* Lower CPU use (about a third less with everything on), same sound.
+
+New in 1.4.0
+------------
+* IR Loader: a new Cabinet choice that plays your own speaker impulse responses. Pick
+  "IR Loader" under Cabinet, then click "Load" next to A (and B if you like) and choose a
+  WAV, AIFF or FLAC file. The A / B slider blends the two (for example two mics on one
+  cabinet). x removes an IR. No latency, no level jumps when you swap, and the IRs are saved
+  in your Cubase project and in your own presets.
+* Warmth is now a tube-style stage: it thickens low notes more than high ones and blooms
+  as you dig in, with even cleaner (anti-aliased) saturation.
+* Sustain compressor: low notes no longer get squashed harder than the rest, and after a
+  long sustained passage it lets go with a slow, smooth tail, like an optical compressor.
+  The new LOOKAHEAD button catches even the sharpest pick attacks smoothly (adds 3 ms of
+  latency; Cubase compensates automatically). Presets leave it as you set it.
+* Reverb: twice as many delay lines plus early reflections for a richer, more natural
+  room, and Decay now means the real decay time.
+* Delay: the MOD menu next to the delay switches the modulation between Sine (smooth and
+  even, as before) and Tape (slow irregular wow, a little flutter, softer repeats).
+* Resizable window: drag the bottom-right corner to make it bigger or smaller. In the app
+  you can also maximize it (button at the top right, or double-click the title bar).
+* Projects saved with earlier versions open with exactly the same settings.
+
+New in 1.3.0
+------------
+* Auto Level now depends on your settings only: the same settings always give exactly the
+  same sound, whatever you played before. (1.2.0 kept re-learning your playing level.)
+* Going back to a sound you had moments ago is instant.
+* Lower CPU use again.
+* Tip: set your interface so the guitar peaks around -12 dB on the IN meter - that's the
+  level Auto Level matches at.
+
+New in 1.2.0
+------------
+* Auto Level is now rock-steady: the same level at every buffer size, in every bounce
+  and every time you reopen a project, and two copies of the plugin never affect each other.
+* No more risk of audio dropouts from the plugin allocating memory while it plays.
+* Every control comes back exactly after you push it to an extreme (Reverb Size and
+  Pre-Delay used to end up very slightly off).
+* Cleaner delay modulation and cleaner filters (less low-level noise on loud high notes).
+
+New in 1.1.0
+------------
+* No clicks when you move any control or switch while playing.
+* Projects and presets reload exactly: Cubase can no longer reset your tweaked knobs
+  to the factory preset when it reopens a project.
+* New noise gate: no buzzing or stuttering at high settings, and it recovers fully.
+* Same sound at every buffer size.
+* Cleaner Warmth: less aliasing, and 0 % is now completely clean (presets unchanged).
+* Exact latency reported to Cubase.
+* The version number is shown in the plugin window.
+
+WHAT'S IN IT (in signal order)
+------------------------------
+* Input: a Pickup selector (Single Coil, Humbucker or Flat). Each setting applies its own
+  EQ correction and level adjustment, so both pickup types hit the compressor the same way.
+  There's also a 50/60 Hz hum filter for single coils and a soft noise gate.
+
+* Sustain: a smooth optical-style compressor that lets go more slowly the harder it's
+  working, with a long gentle tail after sustained playing, and that doesn't over-squash
+  low notes. It has automatic make-up gain, an Attack control that lets the pick attack
+  through, and a Blend control that mixes in the uncompressed signal to keep detail.
+  LOOKAHEAD catches the sharpest pick attacks smoothly (3 ms latency). An ON switch turns
+  it off if you already use a hardware compressor before your interface. It fades smoothly
+  without clicking, and changing presets never changes ON or LOOKAHEAD.
+
+* Warmth: a tube-style stage that adds fullness, more on low notes than high ones, and
+  blooms as you dig in. Clean and smooth at low settings, richer as you turn it up.
+  TIGHT keeps the deep lows out of it. Clarity trims low-mid mud only when it builds up.
+
+* Tone: Bass, Mid with adjustable frequency, Presence, Treble, Low Cut and High Cut.
+
+* Cabinet: three speaker-cabinet voicings (Open 1x12, Classic 2x12, Closed 4x12), an IR
+  Loader for your own impulse responses (two slots, A and B, with a blend and ALIGN), or
+  Off (DI).
+
+* Delay: repeats get darker each time, time changes glide like tape instead of clicking,
+  plus subtle modulation in Sine or Tape style, ducking (repeats drop back while you
+  play), ping-pong and tempo sync (the project tempo in Cubase; your own tempo or TAP in
+  the app).
+
+* Reverb: early reflections and a smooth, dense 16-line tail with no metallic ringing.
+  Ducking lets it back off while you play.
+  Decay is the real decay time; the highs fade faster, like a real room. The low cut is
+  set to 200 Hz by default so it doesn't get muddy.
+
+* Output: an Output level control, input and output meters, and Auto Level. Auto Level
+  keeps the output as loud as your dry guitar whenever you change presets or settings, so
+  a sound never seems better just because it's louder. With it on, the presets are within
+  1 dB of each other, compared with about 7 dB apart without it. The Output knob is the
+  only control that changes the final volume.
+
+* Presets: 8 starting points, including Glassy Single Coil, Warm Jazz Humbucker, Endless
+  Sustain, Ambient Swell and DI Clean (No Cab). You can also save, replace and delete your
+  own presets with the Save and Delete buttons (see YOUR OWN PRESETS below). The app and
+  the VST3 share the same presets.
+
+Formats:
+* VST3 plugin for Cubase and other DAWs.
+* Standalone app that plays through an ASIO sound card. It puts your guitar in the center
+  with the delay and reverb in stereo around it, and remembers your sound card and settings.
+
+
+STANDALONE APP (ASIO)
+---------------------
+1. Install your sound card's ASIO driver (from the manufacturer's website) and connect the card.
+   Close Cubase and anything else that uses the card.
+
+2. Copy "Standalone\Clean Tone Studio.exe" anywhere you like (e.g. the Desktop) and
+   double-click it.
+   The first time, Windows may show "Windows protected your PC" because the app isn't
+   code-signed. Click "More info", then "Run anyway".
+
+3. Click  Options -> Audio/MIDI Settings...
+     - Audio device type:      ASIO
+     - Device:                 your sound card's ASIO driver
+     - Active input channels:  turn on ONLY the input your guitar is plugged into
+     - Active output channels: your headphone / monitor outputs
+     - Buffer size:            64-128 samples (raise it if you hear crackles)
+     - "Control Panel" opens the sound card's own driver settings.
+
+4. Untick "Mute audio input". The app mutes input by default to prevent speaker
+   feedback, which isn't a risk with a guitar and headphones. It remembers this.
+
+5. Pick a preset (top right) and play. Single coils: start with "Glassy Single Coil".
+   Humbuckers: start with "Warm Jazz Humbucker" or "Humbucker Chime".
+
+The app remembers your sound card, settings and last sound every time you open it.
+
+No sound?
+  - Check that "Mute audio input" is unticked and that the IN meter moves when you play.
+  - Check that the correct input channel is ticked under Active input channels.
+  - Windows Settings -> Privacy & security -> Microphone: turn on
+    "Let desktop apps access your microphone" (some drivers need this).
+
+
+VST3 PLUGIN FOR CUBASE (optional)
+---------------------------------
+Close Cubase, then either:
+  A: double-click "Install VST3.bat" and click Yes when Windows asks for administrator
+     permission, or
+  B: copy the whole "VST3\Clean Tone Studio.vst3" folder into
+         C:\Program Files\Common Files\VST3
+Then start Cubase. Find it in the track's Inserts by typing "Clean Tone".
+
+
+YOUR OWN PRESETS
+----------------
+- Get a sound you like, click "Save" (next to the preset menu), type a name, press Enter.
+- Your presets appear in the preset menu under "My Presets". They're shared between the app
+  and the VST3 in Cubase, so a sound you save in one shows up in the other.
+- "(edited)" after the name means you've moved knobs since loading it. Pick the preset again
+  to go back to it, or Save to keep the changes (same name = replace).
+- "Delete" removes the selected one of your presets (click it twice to confirm). It goes to
+  the Recycle Bin, so you can get it back.
+- Presets never change Output, Auto Level, the delay's tempo, or the compressor's ON and
+  LOOKAHEAD switches.
+- If you use the IR Loader, your preset keeps the IRs inside it, so it works on another PC
+  even without the IR files.
+- They're stored in  Documents\Clean Tone Studio\Presets  (one .ctpreset file each).
+  To move them to another PC, copy that folder.
+
+
+TIPS
+----
+- Aim for guitar peaks of about -12 dB on the IN meter. If the GR meter shows constant
+  heavy compression, turn Input down.
+- Auto Level (on by default) keeps your volume the same when you change presets or knobs.
+  Use Output to set how loud the app is.
+- Already using a hardware compressor before your interface? Click the ON button in the
+  SUSTAIN / DYNAMICS panel to switch the plugin's compressor off. Presets won't turn it back on.
+- Double-click any knob to reset it.
+- Window too small or too big? Drag its bottom-right corner; everything scales.
+
+
+UPGRADING FROM 1.6.0 ("OPEN CLEAN TONE STUDIO")
+-----------------------------------------------
+It's the same plugin, back under its original name. Your Cubase projects load it as
+before. Presets you saved with 1.6.0 (in Documents\Open Clean Tone Studio\Presets) are
+copied back to Documents\Clean Tone Studio\Presets the first time you open it; none of
+your other presets are replaced, and the 1.6.0 folder is left as it was. Install VST3.bat
+removes "Open Clean Tone Studio.vst3" so Cubase doesn't list the plugin twice; if you
+install by hand, delete that folder yourself. The app goes back to the sound card
+settings you had before 1.6.0. You can delete "Open Clean Tone Studio.exe".
+
+
+UNINSTALL
+---------
+Delete C:\Program Files\Common Files\VST3\Clean Tone Studio.vst3 and the .exe.
+Your presets are kept in Documents\Clean Tone Studio\Presets.
