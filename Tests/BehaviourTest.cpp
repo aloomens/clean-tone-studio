@@ -1015,6 +1015,7 @@ static int snapshots (const File& dir)
     };
     std::unique_ptr<AudioProcessorEditor> e (p.createEditor());
     save (e->createComponentSnapshot (e->getLocalBounds(), true, 1.0f), "01_default.png");
+    save (e->createComponentSnapshot (e->getLocalBounds(), true, 2.0f), "00_readme_screenshot.png");   // sharp, for the README / GitHub page
 
     p.loadFactoryPreset (6);
     set (p, IDs::compOn, 0);

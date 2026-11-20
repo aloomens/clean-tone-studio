@@ -2,6 +2,8 @@
 
 A channel strip for Windows for recording clean electric guitar: smooth and detailed, full-bodied, with plenty of sustain, a clean reverb and a smooth delay. Voicings are tuned for both single-coil and humbucker pickups.
 
+![Clean Tone Studio: the plugin window](docs/screenshot.png)
+
 ## License: free software (GNU AGPLv3)
 
 Clean Tone Studio is free software, released under the **GNU Affero General Public License version 3** (see [LICENSE.txt](LICENSE.txt)). Copyright (C) 2026 Al Oomens.
