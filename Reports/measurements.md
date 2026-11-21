@@ -1,6 +1,6 @@
-# Clean Tone Studio 1.5.0 - plugin measurements
+# Clean Tone Studio 1.6.2 - plugin measurements
 
-Measured offline on the whole plugin (mono in, stereo out, left channel analysed), with Auto Level off so levels are absolute. Unless a row names a preset it starts from the most neutral setting: Flat pickup, compressor off, Warmth 0, flat EQ, filters wide open, cabinet, gate, delay and reverb off. THD: harmonics 2 and up, relative to the fundamental. Aliasing: everything that is not DC, the tone or its harmonics (fold-back products plus noise), relative to the tone. Lower is better throughout. A typical DI guitar peaks around -12 dBFS.
+Measured offline on the whole plugin (mono in, stereo out, left channel analyzed), with Auto Level off so levels are absolute. Unless a row names a preset it starts from the most neutral setting: Flat pickup, compressor off, Warmth 0, flat EQ, filters wide open, cabinet, gate, delay and reverb off. THD: harmonics 2 and up, relative to the fundamental. Aliasing: everything that is not DC, the tone or its harmonics (fold-back products plus noise), relative to the tone. Lower is better throughout. A typical DI guitar peaks around -12 dBFS.
 
 ## Harmonic distortion (THD) at 110 Hz (low A string)
 
@@ -96,16 +96,16 @@ Every delay line has a calibrated absorption filter, so the lows ring for the ti
 |---|---|---|
 | Noise gate | 0.02 % | 0.03 % |
 | Pickup voicing | 0.03 % | 0.05 % |
-| Sustain compressor | 0.15 % | 0.29 % |
-| Warmth (4x oversampled) | 0.86 % | 1.73 % |
+| Sustain compressor | 0.14 % | 0.29 % |
+| Warmth (4x oversampled) | 0.88 % | 1.82 % |
 | Tone stack | 0.05 % | 0.10 % |
 | Cabinet | 0.05 % | 0.10 % |
-| Delay (stereo) | 0.32 % | 0.64 % |
-| Reverb (stereo) | 1.44 % | 2.93 % |
-| IR loader (two 0.3 s IRs blended, stereo) | 2.26 % | 5.31 % |
+| Delay (stereo) | 0.32 % | 0.63 % |
+| Reverb (stereo) | 1.46 % | 2.93 % |
+| IR loader (two 0.3 s IRs blended, stereo) | 2.27 % | 5.19 % |
 | Clarity (dynamic low-mid cut, 100 %) | 0.07 % | 0.13 % |
-| Pick (transient shaper, +100 %) | 0.40 % | 0.81 % |
-| Whole plugin (processBlock, Ambient Swell: everything on) | 3.00 % | 6.09 % |
-| Auto Level measurement, per new setting (total ms, spread over ~0.5 s of audio) | 90.33 ms | 184.64 ms |
+| Pick (transient shaper, +100 %) | 0.40 % | 0.80 % |
+| Whole plugin (processBlock, Ambient Swell: everything on) | 3.03 % | 6.08 % |
+| Auto Level measurement, per new setting (total ms, spread over ~0.5 s of audio) | 89.09 ms | 182.74 ms |
 
 Switched-off delay and reverb rest completely once faded out. The compressor's detector keeps running while it's switched off so it can come back in at exactly the right level.

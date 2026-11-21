@@ -17,6 +17,9 @@ namespace ui
         const juce::Colour accent    { 0xffe8a54b };   // warm amber
         const juce::Colour accent2   { 0xff6fc2c9 };   // cool teal for time effects
         const juce::Colour knob      { 0xff2e3036 };
+        // the title, shared by Clean Tone Studio, Open Vocal Studio and Open Mastering Studio:
+        const juce::Colour titleWhite { 0xffe4e7ee };  // "CLEAN TONE"
+        const juce::Colour studio     { 0xff4fc3f7 };  // "STUDIO"
     }
 
     class LookAndFeel : public juce::LookAndFeel_V4
@@ -96,7 +99,7 @@ private:
     void layoutBody();
     void chooseIR (int slot);
     static juce::String titleText() { return juce::String (CTS_PRODUCT_NAME).toUpperCase(); }
-    static int titleWidth();
+    static int titleWidth();                  // "CLEAN TONE STUDIO v1.6.2", as drawn
     juce::Rectangle<int> titleArea() const;   // click the title: About box (license notice)
 public:
     static juce::String aboutText();           // copyright, license and no-warranty notice
@@ -154,7 +157,7 @@ private:
     // Sync tempo: editable + TAP when the plugin keeps its own tempo (the app), read-only when a DAW sets it
     juce::Slider bpmSlider;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> bpmAttachment;
-    juce::TextButton tapButton { "TAP" };
+    juce::TextButton tapButton { "Tap" };
     juce::Label hostBpmLabel;
     TapTempo tapper;
     ui::Knob dlyTime, dlyFeedback, dlyTone, dlyMod, dlyDuck, dlyWidth, dlyMix;

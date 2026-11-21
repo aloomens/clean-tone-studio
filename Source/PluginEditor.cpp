@@ -450,9 +450,20 @@ CleanToneAudioProcessorEditor::CleanToneAudioProcessorEditor (CleanToneAudioProc
     startTimerHz (30);
 }
 
+// The title, drawn the same way in Clean Tone Studio, Open Vocal Studio and Open Mastering Studio:
+// the name in white with "STUDIO" in blue, 22 px bold, then the version, dim, beside it.
+namespace
+{
+    const float kTitlePx = 22.0f, kVersionPx = 12.0f;
+    Font titleFont()   { return Font (FontOptions (kTitlePx, Font::bold)); }
+    Font versionFont() { return Font (FontOptions (kVersionPx)); }
+    String versionText() { return String ("v") + CTS_VERSION; }
+}
+
 int CleanToneAudioProcessorEditor::titleWidth()
 {
-    return GlyphArrangement::getStringWidthInt (Font (FontOptions (24.0f, Font::bold)), titleText());
+    return GlyphArrangement::getStringWidthInt (titleFont(), titleText()) + 8
+         + GlyphArrangement::getStringWidthInt (versionFont(), versionText());
 }
 
 Rectangle<int> CleanToneAudioProcessorEditor::titleArea() const
@@ -684,7 +695,7 @@ void CleanToneAudioProcessorEditor::timerCallback()
         if (c->getAlpha() != tempoAlpha) c->setAlpha (tempoAlpha);
     {
         const int taps = tapper.getCount (Time::getMillisecondCounterHiRes());
-        const String tapTxt = taps > 0 ? "TAP " + String (taps) : "TAP";
+        const String tapTxt = taps > 0 ? "Tap " + String (taps) : "Tap";
         if (tapButton.getButtonText() != tapTxt) tapButton.setButtonText (tapTxt);
     }
     compLook.setAlpha (compIsOn ? 1.0f : 0.45f);
@@ -730,14 +741,27 @@ void CleanToneAudioProcessorEditor::paintBody (Graphics& g)
     ColourGradient hg (ui::col::panel.brighter (0.08f), 0, 0, ui::col::bg, 0, header.getBottom(), false);
     g.setGradientFill (hg);
     g.fillRect (header);
-    g.setColour (ui::col::accent);
-    g.setFont (FontOptions (24.0f, Font::bold));
-    g.drawText (titleText(), header.reduced (18, 0), Justification::centredLeft);
+    {
+        // "CLEAN TONE " white, "STUDIO" blue, then the version
+        const String name = titleText();
+        const String first = name.upToLastOccurrenceOf (" ", true, false), last = name.fromLastOccurrenceOf (" ", false, false);
+        const int firstW = GlyphArrangement::getStringWidthInt (titleFont(), first);
+        const int lastW = GlyphArrangement::getStringWidthInt (titleFont(), last);
+        const auto t = header.reduced (18, 0);
+        g.setFont (titleFont());
+        g.setColour (ui::col::titleWhite);
+        g.drawText (first, t.withWidth ((float) firstW + 4), Justification::centredLeft);
+        g.setColour (ui::col::studio);
+        g.drawText (last, t.withTrimmedLeft ((float) firstW).withWidth ((float) lastW + 4), Justification::centredLeft);
+        g.setColour (ui::col::dim);
+        g.setFont (versionFont());
+        g.drawText (versionText(), t.withTrimmedLeft ((float) (firstW + lastW + 8)).withWidth (80.0f).translated (0.0f, 3.0f), Justification::centredLeft);
+    }
     if (statusLabel.getText().isEmpty())
     {
         g.setColour (ui::col::dim);
         g.setFont (FontOptions (13.0f));
-        g.drawText (String ("clean electric guitar recording channel   v") + CTS_VERSION, header.reduced (18, 0).withTrimmedLeft (titleWidth() + 16),
+        g.drawText ("clean electric guitar recording channel", header.reduced (18, 0).withTrimmedLeft (titleWidth() + 24),
                     Justification::centredLeft);
     }
 

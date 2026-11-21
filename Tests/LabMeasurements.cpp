@@ -170,7 +170,7 @@ Results run (juce::String& md, bool verbose)
     auto out = [&] (const juce::String& s) { md << s << "\n"; if (verbose) std::cout << s << std::endl; };
 
     out (juce::String ("# ") + CTS_PRODUCT_NAME + " " + CTS_VERSION + " - plugin measurements\n");
-    out ("Measured offline on the whole plugin (mono in, stereo out, left channel analysed), with Auto Level off so levels are "
+    out ("Measured offline on the whole plugin (mono in, stereo out, left channel analyzed), with Auto Level off so levels are "
          "absolute. Unless a row names a preset it starts from the most neutral setting: Flat pickup, compressor off, Warmth 0, "
          "flat EQ, filters wide open, cabinet, gate, delay and reverb off. THD: harmonics 2 and up, relative to the fundamental. "
          "Aliasing: everything that is not DC, the tone or its harmonics (fold-back products plus noise), relative to the tone. "

@@ -1498,7 +1498,7 @@ static void modulesSection()
                     if (pred (ch)) return ch;
             return nullptr;
         };
-        auto isTap = [] (Component* ch) { auto* b = dynamic_cast<TextButton*> (ch); return b != nullptr && b->getButtonText().startsWith ("TAP"); };
+        auto isTap = [] (Component* ch) { auto* b = dynamic_cast<TextButton*> (ch); return b != nullptr && b->getButtonText().startsWith ("Tap"); };
         auto isHostLabel = [] (Component* ch) { auto* l = dynamic_cast<Label*> (ch); return l != nullptr && l->getText().contains ("host"); };
         {
             std::unique_ptr<AudioProcessorEditor> ed (daw.createEditor());

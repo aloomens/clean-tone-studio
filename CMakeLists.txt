@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.22)
 
-project(CleanToneStudio VERSION 1.6.1 LANGUAGES C CXX)
+project(CleanToneStudio VERSION 1.6.2 LANGUAGES C CXX)
 
 # Product name shown to users (files, window, DAW). 1.6.0 was called "Open Clean Tone Studio"; the name went back
 # in 1.6.1. The CMake target, the plugin codes (Ctna / Ctgs) and the saved-state tag never changed, so the
