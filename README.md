@@ -19,6 +19,13 @@ It is built with JUCE (AGPLv3) and the Steinberg VST3 and ASIO SDKs (both used u
 
 The source package contains everything needed to build: this folder plus JUCE 8.0.4 and the ASIO SDK under `external/`. Build with Visual Studio 2022 (Build Tools) and CMake, as described under [Building](#building). Unpack it to a short path such as `C:\src`: deep folders push the compiler's working files past Windows' 260-character path limit, and the build fails.
 
+## Help & feedback
+
+- **Questions** ("how do I...?"): [Discussions Q&A](https://github.com/aloomens/clean-tone-studio/discussions/categories/q-a).
+- **Ideas and feature requests:** [Discussions Ideas](https://github.com/aloomens/clean-tone-studio/discussions/categories/ideas), where others can upvote them, or a [feature request](https://github.com/aloomens/clean-tone-studio/issues/new/choose).
+- **Problems:** a [bug report](https://github.com/aloomens/clean-tone-studio/issues/new/choose). Please include the Clean Tone Studio version (next to the title), your DAW, your Windows version and the steps that show the problem.
+- **Email:** [openstudio.plugins@gmail.com](mailto:openstudio.plugins@gmail.com), for anything, especially if you don't have a GitHub account.
+
 ## What's new in 1.6.2
 
 - **A look shared with Open Mastering Studio and Open Vocal Studio.** The title reads CLEAN TONE in white and STUDIO in blue, with the version right after it (the tagline follows). Section titles keep their color and short underline, which the other two now use as well.
