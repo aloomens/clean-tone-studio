@@ -1671,7 +1671,7 @@ static void modulesSection()
         CleanToneAudioProcessor p;
         const auto about = CleanToneAudioProcessorEditor::aboutText();
         check (p.getName() == "Clean Tone Studio" && about.contains ("CleanToneStudio-" CTS_VERSION "-source.zip") && about.contains (CTS_VERSION) && about.contains ("GNU Affero General Public License")
-                   && about.contains ("WITHOUT ANY WARRANTY") && about.contains ("Copyright (C) 2026") && about.contains ("-source.zip"),
+                   && about.contains ("WITHOUT ANY WARRANTY") && about.contains ("Copyright (C) 2026") && about.contains ("-source.zip") && about.contains ("openstudio.plugins@gmail.com"),
                "free software: the plugin is called \"" + p.getName() + "\" and its About box carries the version, copyright, AGPLv3 and no-warranty notice");
     }
 

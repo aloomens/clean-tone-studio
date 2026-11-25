@@ -1,8 +1,11 @@
-// Offline test host: loads the built VST3, renders a synthetic plucked-guitar
+// Offline test host: loads the built VST3 (or, on Linux, the LV2), renders a synthetic plucked-guitar
 // signal through every preset and several stress scenarios, and checks for
 // NaN/Inf, runaway levels, tails that never die, and editor creation.
 //
-// Usage: PluginHostTest <path-to.vst3> [output-folder-for-wavs]
+// Usage: PluginHostTest <path-to.vst3 | path-to.lv2> [output-folder-for-wavs]
+// LV2: a JUCE LV2 has one fixed layout (stereo in / stereo out), so a mono guitar is fed to both inputs and
+// the mono-out check is VST3 only. Test with no other copy of the same version installed (e.g. in ~/.lv2):
+// with a duplicate URI the checks still run, but JUCE's LV2 host crashes on exit.
 
 #include <juce_audio_processors/juce_audio_processors.h>
 #include <juce_audio_formats/juce_audio_formats.h>
@@ -15,6 +18,7 @@ using namespace juce;
 static constexpr double kSR = 48000.0;
 static constexpr int kBlock = 512;
 static int failures = 0;
+static bool fixedStereo = false;   // LV2: the plugin's layout can't be changed
 
 static void check (bool ok, const String& what)
 {
@@ -81,6 +85,8 @@ static AudioBuffer<float> render (AudioPluginInstance& p, const AudioBuffer<floa
                                   int numIn, int numOut, std::function<int()> blockSize,
                                   std::function<void (int)> perBlock = {})
 {
+    const int wantOut = numOut;
+    if (fixedStereo) { numIn = 2; numOut = 2; }          // a mono source goes to both inputs, as a DAW does
     AudioProcessor::BusesLayout layout;
     layout.inputBuses.add (numIn == 1 ? AudioChannelSet::mono() : AudioChannelSet::stereo());
     layout.outputBuses.add (numOut == 1 ? AudioChannelSet::mono() : AudioChannelSet::stereo());
@@ -89,7 +95,7 @@ static AudioBuffer<float> render (AudioPluginInstance& p, const AudioBuffer<floa
     p.prepareToPlay (kSR, kBlock);
 
     const int total = in.getNumSamples();
-    AudioBuffer<float> out (numOut, total);
+    AudioBuffer<float> out (wantOut, total);
     MidiBuffer midi;
     int pos = 0, blockIndex = 0;
     while (pos < total)
@@ -97,10 +103,10 @@ static AudioBuffer<float> render (AudioPluginInstance& p, const AudioBuffer<floa
         const int n = std::min (blockSize(), total - pos);
         AudioBuffer<float> buf (std::max (numIn, numOut), n);
         buf.clear();
-        for (int c = 0; c < numIn; ++c) buf.copyFrom (c, 0, in, 0, pos, n);
+        for (int c = 0; c < numIn; ++c) buf.copyFrom (c, 0, in, std::min (c, in.getNumChannels() - 1), pos, n);
         if (perBlock) perBlock (blockIndex);
         p.processBlock (buf, midi);
-        for (int c = 0; c < numOut; ++c) out.copyFrom (c, pos, buf, c, 0, n);
+        for (int c = 0; c < wantOut; ++c) out.copyFrom (c, pos, buf, c, 0, n);
         pos += n; ++blockIndex;
     }
     p.releaseResources();
@@ -196,29 +202,61 @@ int main (int argc, char* argv[])
         return 0;
     }
 
-    if (argc < 2) { std::cout << "Usage: PluginHostTest <plugin.vst3> [wav-out-dir]\n"; return 2; }
-    const String path (argv[1]);
+    if (argc < 2) { std::cout << "Usage: PluginHostTest <plugin.vst3 | plugin.lv2> [wav-out-dir]\n"; return 2; }
+    const File file (File::getCurrentWorkingDirectory().getChildFile (String (argv[1])));
     const File wavDir = argc > 2 ? File (argv[2]) : File();
 
-    AudioPluginFormatManager fm;
-    fm.addFormat (new VST3PluginFormat());
+    std::unique_ptr<AudioPluginFormat> fmt;
+    String identifier = file.getFullPathName();
+    if (file.hasFileExtension ("vst3"))
+        fmt = std::make_unique<VST3PluginFormat>();
+   #if JUCE_PLUGINHOST_LV2
+    else if (file.hasFileExtension ("lv2"))
+    {
+        // LV2 plugins are found by URI after the host scans the folder that holds the bundle
+        fmt = std::make_unique<LV2PluginFormat>();
+        for (auto& u : fmt->searchPathsForPlugins (FileSearchPath (file.getParentDirectory().getFullPathName()), false, false))
+            if (u.containsIgnoreCase ("clean-tone-studio")) identifier = u;
+        std::cout << "LV2 URI: " << identifier << "\n";
+        fixedStereo = true;
+    }
+   #endif
+    if (std::getenv ("CTS_HOST_STEREO")) fixedStereo = true;   // debug: feed a VST3 stereo too, as the LV2 is
+    if (fmt == nullptr) { std::cout << "Unknown plugin type: " << file.getFullPathName() << "\n"; return 2; }
+
     OwnedArray<PluginDescription> types;
-    VST3PluginFormat vst3;
-    vst3.findAllTypesForFile (types, path);
-    if (types.isEmpty()) { std::cout << "No VST3 plugin found at " << path << "\n"; return 1; }
+    fmt->findAllTypesForFile (types, identifier);
+    if (types.isEmpty()) { std::cout << "No " << fmt->getName() << " plugin found at " << file.getFullPathName() << "\n"; return 1; }
 
     String err;
-    auto plugin = fm.createPluginInstance (*types[0], kSR, kBlock, err);
+    auto plugin = fmt->createInstanceFromDescription (*types[0], kSR, kBlock, err);
     if (! plugin) { std::cout << "Failed to load: " << err << "\n"; return 1; }
 
-    std::cout << "Loaded: " << plugin->getName() << "  (" << types[0]->manufacturerName << ")\n";
+    if (const char* v = std::getenv ("CTS_HOST_PARAMS"))   // debug: set every parameter to v and show what comes back
+    {
+        for (auto* p : plugin->getParameters())
+        {
+            p->setValue (String (v).getFloatValue());
+            std::cout << "  param " << p->getName (64) << " = " << p->getValue() << " (" << p->getCurrentValueAsText() << ")\n";
+        }
+        return 0;
+    }
+    std::cout << "Loaded: " << plugin->getName() << "  (" << types[0]->manufacturerName << ", " << fmt->getName()
+              << " " << types[0]->version << ")\n";
     for (auto* prm : plugin->getParameters())
         if (std::getenv ("CTS_DEBUG_PARAMS")) std::cout << "    param: " << prm->getName (64) << "\n";
     std::cout << "Parameters: " << plugin->getParameters().size()
               << "   Programs: " << plugin->getNumPrograms() << "\n";
 
     plugin->prepareToPlay (kSR, kBlock);
+    {
+        // LV2 reports latency through an output port that is only written while processing:
+        // hosts read it after the first block (VST3 reports it at once)
+        AudioBuffer<float> silent (std::max (plugin->getTotalNumInputChannels(), plugin->getTotalNumOutputChannels()), kBlock);
+        silent.clear(); MidiBuffer m; plugin->processBlock (silent, m);
+    }
     std::cout << "Latency: " << plugin->getLatencySamples() << " samples\n";
+    check (plugin->getLatencySamples() == 5 || plugin->getLatencySamples() == 149, "latency reported (5 samples, or 149 with Lookahead)");
     plugin->releaseResources();
 
     const auto guitar = makeGuitar (8.0, 7.0);
@@ -226,6 +264,52 @@ int main (int argc, char* argv[])
     const auto dry = analyse (guitar, tailStart);
     std::cout << "Dry input: peak " << Decibels::gainToDecibels (dry.peak) << " dBFS, rms " << dry.rmsDb << " dB\n\n";
     if (wavDir != File()) { wavDir.createDirectory(); writeWav (wavDir.getChildFile ("00_dry_input.wav"), guitar); }
+
+    if (std::getenv ("CTS_LEVEL_PROBE"))   // debug: loudness in -> out of Studio Clean on guitar and on full-range noise
+    {
+        AudioBuffer<float> pink (1, (int) (8.0 * kSR));
+        {
+            Random rng (5); float b0 = 0, b1 = 0, b2 = 0;   // Paul Kellet's economy pink filter
+            for (int i = 0; i < pink.getNumSamples(); ++i)
+            {
+                const float w = rng.nextFloat() * 2.0f - 1.0f;
+                b0 = 0.99765f * b0 + w * 0.0990460f; b1 = 0.96300f * b1 + w * 0.2965164f; b2 = 0.57000f * b2 + w * 1.0526913f;
+                pink.setSample (0, i, b0 + b1 + b2 + w * 0.1848f);
+            }
+        }
+        auto atLoudness = [] (AudioBuffer<float> b, float lufs) { b.applyGain (Decibels::decibelsToGain (lufs - kLoudness (b, 8.0))); return b; };
+        int studio = 0;
+        for (int i = 0; i < plugin->getNumPrograms(); ++i) if (plugin->getProgramName (i) == "Studio Clean") studio = i;
+        struct Sig { const char* name; AudioBuffer<float> b; };
+        std::vector<Sig> sigs { { "guitar DI (as made)", guitar }, { "guitar at -14.5 LUFS", atLoudness (guitar, -14.5f) },
+                                { "pink noise -14.5 LUFS", atLoudness (pink, -14.5f) }, { "pink noise -34.5 LUFS", atLoudness (pink, -34.5f) } };
+        struct Cfg { const char* name; std::function<void()> set; };
+        std::vector<Cfg> cfgs {
+            { "Studio Clean, Auto Level ON",  [&] { setParam (*plugin, "Auto Level", 1); } },
+            { "Studio Clean, Auto Level OFF", [&] { setParam (*plugin, "Auto Level", 0); } },
+            { "  ON, reverb off",             [&] { setParam (*plugin, "Auto Level", 1); setParam (*plugin, "Reverb On", 0); } },
+            { "  ON, compressor off",         [&] { setParam (*plugin, "Auto Level", 1); setParam (*plugin, "Compressor On", 0); } },
+            { "  ON, warmth 0",               [&] { setParam (*plugin, "Auto Level", 1); setParam (*plugin, "Warmth", 0); } },
+            { "  ON, all three off",          [&] { setParam (*plugin, "Auto Level", 1); setParam (*plugin, "Reverb On", 0); setParam (*plugin, "Compressor On", 0); setParam (*plugin, "Warmth", 0); } },
+            { "  OFF, all three off",         [&] { setParam (*plugin, "Auto Level", 0); setParam (*plugin, "Reverb On", 0); setParam (*plugin, "Compressor On", 0); setParam (*plugin, "Warmth", 0); } } };
+        std::cout << "Loudness change in -> out (K-weighted, LU)\n" << String ("").paddedRight (' ', 32);
+        for (auto& s : sigs) std::cout << String (s.name).paddedLeft (' ', 24);
+        std::cout << "\n";
+        for (auto& c : cfgs)
+        {
+            String row = String (c.name).paddedRight (' ', 32);
+            for (auto& s : sigs)
+            {
+                selectProgram (*plugin, studio);
+                setParam (*plugin, "Compressor On", 1); setParam (*plugin, "Reverb On", 1); setParam (*plugin, "Output", 0);
+                c.set();
+                const auto out = render (*plugin, s.b, 1, 2, [] { return kBlock; });
+                row << String (kLoudness (out, 8.0) - kLoudness (s.b, 8.0), 1).paddedLeft (' ', 24);
+            }
+            std::cout << "ROW " << row << std::endl;
+        }
+        return 0;
+    }
 
     // 1) every preset, mono in -> stereo out
     for (int prog = 0; prog < plugin->getNumPrograms(); ++prog)
@@ -266,8 +350,12 @@ int main (int argc, char* argv[])
         st.copyFrom (1, 0, guitar, 0, 0, guitar.getNumSamples());
         auto a = analyse (render (*plugin, st, 2, 2, [] { return kBlock; }), tailStart);
         check (a.finite && a.peak < 1.0f, "stereo in / stereo out runs clean");
-        auto b = analyse (render (*plugin, guitar, 1, 1, [] { return kBlock; }), tailStart);
-        check (b.finite && b.peak < 1.0f, "mono in / mono out runs clean");
+        if (! fixedStereo)
+        {
+            auto b = analyse (render (*plugin, guitar, 1, 1, [] { return kBlock; }), tailStart);
+            check (b.finite && b.peak < 1.0f, "mono in / mono out runs clean");
+        }
+        else std::cout << "  (mono in / mono out: VST3 only - a JUCE LV2 has one fixed stereo layout)\n";
     }
 
     // 3) irregular block sizes, including bigger than prepared and 1-sample blocks
@@ -289,12 +377,17 @@ int main (int argc, char* argv[])
     // 4) automation torture: every parameter randomised every block
     std::cout << "\nAutomation stress\n";
     {
-        Random r (99);
-        auto& params = plugin->getParameters();
+        Random r (std::getenv ("CTS_HOST_SEED") ? String (std::getenv ("CTS_HOST_SEED")).getLargeIntValue() : 99);
+        // the plugin's own knobs only - not the host's Bypass / Program - in name order, because a VST3
+        // host lists them in the plugin's order and an LV2 host alphabetically: same automation in both
+        Array<AudioProcessorParameter*> params;
+        for (auto* p : plugin->getParameters())
+            if (p->getName (64) != "Bypass" && p->getName (64) != "Program") params.add (p);
+        std::sort (params.begin(), params.end(), [] (auto* a, auto* b) { return a->getName (64) < b->getName (64); });
         auto out = render (*plugin, guitar, 1, 2, [] { return 256; }, [&] (int)
         {
-            for (auto* p : params)   // the plugin's own knobs only - not the host's Bypass / Program
-                if (p->getName (64) != "Bypass" && p->getName (64) != "Program" && r.nextInt (4) == 0)
+            for (auto* p : params)
+                if (r.nextInt (4) == 0)
                     p->setValue (r.nextFloat());
         });
         const auto s = analyse (out, tailStart);

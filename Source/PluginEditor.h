@@ -99,7 +99,7 @@ private:
     void layoutBody();
     void chooseIR (int slot);
     static juce::String titleText() { return juce::String (CTS_PRODUCT_NAME).toUpperCase(); }
-    static int titleWidth();                  // "CLEAN TONE STUDIO v1.6.2", as drawn
+    static int titleWidth();                  // "CLEAN TONE STUDIO v1.6.3", as drawn
     juce::Rectangle<int> titleArea() const;   // click the title: About box (license notice)
 public:
     static juce::String aboutText();           // copyright, license and no-warranty notice

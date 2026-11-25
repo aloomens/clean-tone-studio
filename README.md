@@ -1,6 +1,6 @@
-# Clean Tone Studio 1.6.2 (VST3 + standalone)
+# Clean Tone Studio 1.6.3 (VST3 + standalone)
 
-A channel strip for Windows for recording clean electric guitar: smooth and detailed, full-bodied, with plenty of sustain, a clean reverb and a smooth delay. Voicings are tuned for both single-coil and humbucker pickups.
+A channel strip for Windows (and, as a beta, Linux) for recording clean electric guitar: smooth and detailed, full-bodied, with plenty of sustain, a clean reverb and a smooth delay. Voicings are tuned for both single-coil and humbucker pickups.
 
 ![Clean Tone Studio: the plugin window](docs/screenshot.png)
 
@@ -15,7 +15,7 @@ Clean Tone Studio is free software, released under the **GNU Affero General Publ
 - **If you change it and share your version** (or run it for others over a network), your changes must be released under the same license.
 - **There is no warranty.** See the license for the exact terms.
 
-It is built with JUCE (AGPLv3) and the Steinberg VST3 and ASIO SDKs (both used under GPLv3); see [THIRD-PARTY-NOTICES.txt](THIRD-PARTY-NOTICES.txt). Click the **CLEAN TONE STUDIO** title in the app or plugin to see the license notice.
+It is built with JUCE (AGPLv3), the Steinberg VST3 and ASIO SDKs (both used under GPLv3) and, for the Linux LV2 plugin, the LV2 SDK (ISC); see [THIRD-PARTY-NOTICES.txt](THIRD-PARTY-NOTICES.txt). Click the **CLEAN TONE STUDIO** title in the app or plugin to see the license notice.
 
 The source package contains everything needed to build: this folder plus JUCE 8.0.4 and the ASIO SDK under `external/`. Build with Visual Studio 2022 (Build Tools) and CMake, as described under [Building](#building). Unpack it to a short path such as `C:\src`: deep folders push the compiler's working files past Windows' 260-character path limit, and the build fails.
 
@@ -23,8 +23,34 @@ The source package contains everything needed to build: this folder plus JUCE 8.
 
 - **Questions** ("how do I...?"): [Discussions Q&A](https://github.com/aloomens/clean-tone-studio/discussions/categories/q-a).
 - **Ideas and feature requests:** [Discussions Ideas](https://github.com/aloomens/clean-tone-studio/discussions/categories/ideas), where others can upvote them, or a [feature request](https://github.com/aloomens/clean-tone-studio/issues/new/choose).
-- **Problems:** a [bug report](https://github.com/aloomens/clean-tone-studio/issues/new/choose). Please include the Clean Tone Studio version (next to the title), your DAW, your Windows version and the steps that show the problem.
+- **Problems:** a [bug report](https://github.com/aloomens/clean-tone-studio/issues/new/choose). Please include the Clean Tone Studio version (next to the title), your DAW, your Windows version (or Linux distribution) and the steps that show the problem.
 - **Email:** [openstudio.plugins@gmail.com](mailto:openstudio.plugins@gmail.com), for anything, especially if you don't have a GitHub account.
+
+The About box (click the **CLEAN TONE STUDIO** title) shows the same contact.
+
+## Linux (beta)
+
+An experimental Linux build (64-bit Intel/AMD) is published as a separate **pre-release** on the [Releases](https://github.com/aloomens/clean-tone-studio/releases) page: `CleanToneStudio-<version>-linux-x64-beta.zip`. It is the same program built natively for Linux, as a VST3 plugin, an LV2 plugin and a standalone app. It passes the same automated tests as the Windows build and loads in Ardour, but few people have tried it yet. Please report how it works for you in Discussions or by email.
+
+- **Needs** glibc 2.38 or newer (Ubuntu 24.04, Debian 13, Fedora 39, Linux Mint 22 or later), X11 or XWayland, and ALSA, JACK or PipeWire.
+- **Install:** unzip it and run `./install.sh`, which copies the plugins to `~/.vst3` and `~/.lv2`, or copy the two folders there yourself. The app runs from anywhere and offers ALSA and, where it's installed, JACK (PipeWire's JACK works too). The INSTALL.txt in the zip has the details.
+- **LV2:** a JUCE LV2 plugin has one fixed channel layout, stereo in and stereo out. On a mono guitar track your DAW feeds the guitar to both inputs, which sounds the same as the VST3's mono input.
+- **Build it yourself** from the source zip (Ubuntu/Debian package names):
+
+```sh
+sudo apt install build-essential cmake ninja-build pkg-config libasound2-dev libjack-jackd2-dev \
+  libfreetype-dev libfontconfig1-dev libx11-dev libxcomposite-dev libxcursor-dev libxext-dev \
+  libxinerama-dev libxrandr-dev libxrender-dev libglu1-mesa-dev mesa-common-dev
+cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release && cmake --build build
+sh Tools/package-linux.sh    # optional: makes the zip in dist/
+```
+
+## What's new in 1.6.3
+
+- **Linux beta:** a native Linux build with VST3, LV2 and the standalone app, published as a separate pre-release (see [Linux (beta)](#linux-beta)). On Linux the app offers JACK as well as ALSA. The Windows download is unchanged apart from the points below.
+- **Contact in the About box:** click the title for "Questions, ideas, problems: openstudio.plugins@gmail.com or GitHub Discussions".
+- **THIRD-PARTY-NOTICES.txt** now carries the full license texts of libFLAC and Ogg Vorbis, which are part of the program, and the LV2 SDK's license for the Linux build.
+- No change to the sound; presets, projects and app settings are where they were.
 
 ## What's new in 1.6.2
 
@@ -214,7 +240,7 @@ Aim for DI peaks of about −12 dBFS at the interface; that's the level Auto Lev
 
 ## Building
 
-The version number lives in `CMakeLists.txt` (`project(... VERSION 1.6.1)`), and the product name next to it (`CTS_PRODUCT_NAME`); the plugin window, the saved settings and the Windows file properties all take them from there. The CMake target and the plugin codes stay `CleanToneStudio` / `Ctna` / `Ctgs`, so projects made with every version keep loading.
+The version number lives in `CMakeLists.txt` (`project(... VERSION 1.6.3)`), and the product name next to it (`CTS_PRODUCT_NAME`); the plugin window, the saved settings and the Windows file properties all take them from there. The CMake target and the plugin codes stay `CleanToneStudio` / `Ctna` / `Ctgs`, so projects made with every version keep loading.
 
 Requirements: Visual Studio 2022 (or Build Tools) and CMake 3.22+. JUCE 8.0.4 and the ASIO SDK are included under `external/`.
 

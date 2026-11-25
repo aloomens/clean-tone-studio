@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.22)
 
-project(CleanToneStudio VERSION 1.6.2 LANGUAGES C CXX)
+project(CleanToneStudio VERSION 1.6.3 LANGUAGES C CXX)
 
 # Product name shown to users (files, window, DAW). 1.6.0 was called "Open Clean Tone Studio"; the name went back
 # in 1.6.1. The CMake target, the plugin codes (Ctna / Ctgs) and the saved-state tag never changed, so the
@@ -20,13 +20,25 @@ add_compile_definitions(CTS_VERSION="${PROJECT_VERSION}" CTS_PRODUCT_NAME="${CTS
 # on the buffer size. Denormals are already flushed in hardware (ScopedNoDenormals), so turn that off.
 add_compile_definitions(JUCE_DSP_ENABLE_SNAP_TO_ZERO=0)
 
+# Windows: VST3 + app. Linux also builds LV2 (for Ardour and other LV2 hosts).
+# The LV2 URI identifies the plugin in saved LV2 sessions: never change it once a Linux build is out.
+set(CTS_FORMATS VST3 Standalone)
+set(CTS_COMPANY_EMAIL "openstudio.plugins@gmail.com")
+if(UNIX AND NOT APPLE)
+    list(APPEND CTS_FORMATS LV2)
+    set(CTS_COMPANY_EMAIL "mailto:openstudio.plugins@gmail.com")   # LV2 writes it as a URI (foaf:mbox)
+endif()
+
 juce_add_plugin(CleanToneStudio
     COMPANY_NAME "CleanTone Audio"
+    COMPANY_WEBSITE "https://aloomens.github.io/clean-tone-studio/"
+    COMPANY_EMAIL "${CTS_COMPANY_EMAIL}"
     PRODUCT_NAME "${CTS_PRODUCT_NAME}"
     VERSION ${PROJECT_VERSION}
     PLUGIN_MANUFACTURER_CODE Ctna
     PLUGIN_CODE Ctgs
-    FORMATS VST3 Standalone
+    FORMATS ${CTS_FORMATS}
+    LV2URI "https://aloomens.github.io/clean-tone-studio/"
     IS_SYNTH FALSE
     NEEDS_MIDI_INPUT FALSE
     NEEDS_MIDI_OUTPUT FALSE
@@ -48,7 +60,16 @@ target_compile_definitions(CleanToneStudio PUBLIC
     JUCE_WEB_BROWSER=0
     JUCE_USE_CURL=0
     JUCE_VST3_CAN_REPLACE_VST2=0
-    JUCE_DISPLAY_SPLASH_SCREEN=0)
+    JUCE_DISPLAY_SPLASH_SCREEN=0
+    # Linux app: offer JACK (and PipeWire's JACK) next to ALSA for low latency. JUCE loads libjack at
+    # run time, so a system without JACK simply doesn't list it.
+    $<$<PLATFORM_ID:Linux>:JUCE_JACK=1>)
+
+# Linux app file without spaces (easier to start from a terminal); the window title, settings and
+# plugin names keep the product name. Windows keeps "Clean Tone Studio.exe".
+if(UNIX AND NOT APPLE)
+    set_target_properties(CleanToneStudio_Standalone PROPERTIES OUTPUT_NAME "CleanToneStudio")
+endif()
 
 # ---- ASIO for the standalone app: Steinberg's ASIO SDK in external/asiosdk, used under GPLv3 ----
 set(ASIO_SDK_DIR "${CMAKE_CURRENT_SOURCE_DIR}/external/asiosdk" CACHE PATH "Folder containing the ASIO SDK (with common/iasiodrv.h)")
@@ -70,12 +91,14 @@ target_link_libraries(CleanToneStudio
         juce::juce_recommended_warning_flags)
 
 # ---- Offline test host: loads the built VST3 and runs audio through it ----
-option(CTS_BUILD_TESTS "Build the offline VST3 test host" ON)
+option(CTS_BUILD_TESTS "Build the test programs (VST3 / LV2 test host, preset and behaviour tests)" ON)
 if(CTS_BUILD_TESTS)
     juce_add_console_app(PluginHostTest PRODUCT_NAME "PluginHostTest")
     target_sources(PluginHostTest PRIVATE Tests/HostTest.cpp)
     target_compile_definitions(PluginHostTest PRIVATE
         JUCE_PLUGINHOST_VST3=1
+        $<$<PLATFORM_ID:Linux>:JUCE_PLUGINHOST_LV2=1>
+        $<$<PLATFORM_ID:Linux>:JUCE_JACK=1>   # so --list-devices shows the same device types as the app
         JUCE_WEB_BROWSER=0
         JUCE_USE_CURL=0)
     target_link_libraries(PluginHostTest
@@ -101,6 +124,7 @@ if(CTS_BUILD_TESTS)
     target_sources(BehaviourTest PRIVATE Tests/BehaviourTest.cpp Tests/LabMeasurements.cpp Source/PluginProcessor.cpp Source/PluginEditor.cpp)
     target_compile_definitions(BehaviourTest PRIVATE JUCE_WEB_BROWSER=0 JUCE_USE_CURL=0 JUCE_MODAL_LOOPS_PERMITTED=1)
     # the module tests keep a few dozen complete plugin instances (about 40 KB each) on the stack: give it 8 MB
+    # (Windows defaults to 1 MB; Linux already gives the main thread 8 MB)
     if(MSVC)
         target_link_options(BehaviourTest PRIVATE "/STACK:8388608")
     endif()

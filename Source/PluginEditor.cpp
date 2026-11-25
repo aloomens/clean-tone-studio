@@ -484,7 +484,8 @@ String CleanToneAudioProcessorEditor::aboutText()
            "Affero General Public License (LICENSE.txt, included with the program) for more details.\n\n"
            "The source code is distributed alongside the program (" + String (CTS_PRODUCT_NAME).removeCharacters (" ")
            + "-" CTS_VERSION "-source.zip).\n\n"
-           "Built with JUCE (AGPLv3) and the Steinberg VST3 and ASIO SDKs (GPLv3). "
+           "Questions, ideas, problems: openstudio.plugins@gmail.com or GitHub Discussions.\n\n"
+           "Built with JUCE (AGPLv3), the Steinberg VST3 and ASIO SDKs (GPLv3) and, on Linux, the LV2 SDK (ISC). "
            "VST and ASIO are trademarks of Steinberg Media Technologies GmbH. "
            "See THIRD-PARTY-NOTICES.txt.";
 }

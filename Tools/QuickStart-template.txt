@@ -24,6 +24,13 @@ this zip together with the source code zip
 (CleanToneStudio-{VERSION}-source.zip). It comes with NO WARRANTY.
 Click the CLEAN TONE STUDIO title in the app or plugin for the license notice.
 
+New in 1.6.3
+------------
+* Click the CLEAN TONE STUDIO title for the contact address: openstudio.plugins@gmail.com
+  or GitHub Discussions, for questions, ideas and problems.
+* There is now a Linux beta (a separate download on GitHub). Nothing changes on Windows,
+  and the sound is the same.
+
 New in 1.6.2
 ------------
 * A look shared with Open Mastering Studio and Open Vocal Studio: CLEAN TONE in white and

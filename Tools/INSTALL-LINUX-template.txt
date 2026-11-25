@@ -1,0 +1,82 @@
+CLEAN TONE STUDIO {VERSION} - Linux x86-64 (BETA)
+=============================================
+
+This is an experimental Linux build. It is the same Clean Tone Studio as the
+Windows release, built natively for Linux. It passes the full automated test
+suite and loads in Ardour, but it has not yet been tried widely on real Linux
+systems. Please tell us how it works for you (see "Feedback" below).
+
+Contents
+--------
+  VST3/Clean Tone Studio.vst3     The VST3 plugin (a folder - keep it whole)
+  LV2/Clean Tone Studio.lv2       The LV2 plugin (a folder - keep it whole)
+  Standalone/CleanToneStudio      The standalone app (runs from anywhere)
+  install.sh                      Copies both plugins into your home folder
+  README.md                       Full manual: signal chain, every control, presets
+  MEASUREMENTS.md                 Measured distortion, aliasing, response, latency, CPU
+  LICENSE.txt                     GNU Affero General Public License version 3
+  THIRD-PARTY-NOTICES.txt         Licenses for included components
+
+Requirements
+------------
+64-bit Intel/AMD Linux with glibc 2.38 or newer (Ubuntu 24.04, Debian 13,
+Fedora 39, Linux Mint 22 or later), X11 or XWayland, and ALSA, JACK or
+PipeWire for audio. The plugins work in any VST3 or LV2 host, for example
+Ardour, Reaper, Bitwig Studio, Carla or Qtractor.
+
+Install the plugins
+-------------------
+Option A: open a terminal in this folder and run
+    ./install.sh
+It copies the plugins to ~/.vst3 and ~/.lv2 (no administrator rights needed)
+and replaces an older version if there is one.
+
+Option B: copy the folders by hand:
+    "Clean Tone Studio.vst3"  into  ~/.vst3/
+    "Clean Tone Studio.lv2"   into  ~/.lv2/
+
+Then rescan plugins in your DAW and insert Clean Tone Studio on your guitar
+track. It reports its latency (5 samples, about 0.1 ms; 3 ms more with
+LOOKAHEAD), so the DAW compensates. Use either the VST3 or the LV2, not both
+on one track: they sound the same. The LV2 always runs in stereo; on a mono
+guitar track your DAW feeds the guitar to both inputs, which gives the same
+sound.
+
+Use the standalone app
+----------------------
+Run Standalone/CleanToneStudio (double-click it, or start it from a
+terminal: ./CleanToneStudio). If your file manager opens it as a file,
+right-click it and make it executable, or run:
+    chmod +x Standalone/CleanToneStudio
+  1. Choose your audio interface under Options > Audio/MIDI Settings...
+     (JACK gives the lowest latency; ALSA "default" goes through
+     PulseAudio/PipeWire). Turn on only the input your guitar is plugged into.
+  2. Untick "Mute audio input" (it is on by default to avoid speaker feedback).
+  3. Pick a preset (top right) and play.
+The app puts your guitar in the center with the delay and reverb in stereo
+around it, and remembers your audio settings and last sound.
+
+Your presets are kept in ~/Documents/Clean Tone Studio/Presets (or your
+language's Documents folder), shared by the app and the plugins, so presets
+from Windows can be copied in there too.
+
+Feedback
+--------
+Please tell us your Linux distribution, your DAW, VST3 or LV2, and what
+worked or didn't, in the "Linux beta" discussion:
+    https://github.com/aloomens/clean-tone-studio/discussions
+or by email: openstudio.plugins@gmail.com
+
+License
+-------
+Clean Tone Studio is free software under the GNU Affero General Public
+License version 3 (LICENSE.txt). Copyright (C) 2026 Al Oomens.
+You may use it for anything and share it freely. When you share it, pass on
+this zip together with the source code zip
+(CleanToneStudio-{VERSION}-source.zip). It comes with NO WARRANTY.
+Click the CLEAN TONE STUDIO title in the app or plugin for the license notice.
+
+Uninstall
+---------
+Delete ~/.vst3/Clean Tone Studio.vst3, ~/.lv2/Clean Tone Studio.lv2 and the
+app. Your presets stay in ~/Documents/Clean Tone Studio/Presets.

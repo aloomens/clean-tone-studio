@@ -1,4 +1,4 @@
-# Clean Tone Studio 1.6.2 - plugin measurements
+# Clean Tone Studio 1.6.3 - plugin measurements
 
 Measured offline on the whole plugin (mono in, stereo out, left channel analyzed), with Auto Level off so levels are absolute. Unless a row names a preset it starts from the most neutral setting: Flat pickup, compressor off, Warmth 0, flat EQ, filters wide open, cabinet, gate, delay and reverb off. THD: harmonics 2 and up, relative to the fundamental. Aliasing: everything that is not DC, the tone or its harmonics (fold-back products plus noise), relative to the tone. Lower is better throughout. A typical DI guitar peaks around -12 dBFS.
 
@@ -95,17 +95,17 @@ Every delay line has a calibrated absorption filter, so the lows ring for the ti
 | Module | 48 kHz | 96 kHz |
 |---|---|---|
 | Noise gate | 0.02 % | 0.03 % |
-| Pickup voicing | 0.03 % | 0.05 % |
+| Pickup voicing | 0.03 % | 0.06 % |
 | Sustain compressor | 0.14 % | 0.29 % |
-| Warmth (4x oversampled) | 0.88 % | 1.82 % |
+| Warmth (4x oversampled) | 0.90 % | 1.81 % |
 | Tone stack | 0.05 % | 0.10 % |
 | Cabinet | 0.05 % | 0.10 % |
-| Delay (stereo) | 0.32 % | 0.63 % |
-| Reverb (stereo) | 1.46 % | 2.93 % |
-| IR loader (two 0.3 s IRs blended, stereo) | 2.27 % | 5.19 % |
-| Clarity (dynamic low-mid cut, 100 %) | 0.07 % | 0.13 % |
-| Pick (transient shaper, +100 %) | 0.40 % | 0.80 % |
-| Whole plugin (processBlock, Ambient Swell: everything on) | 3.03 % | 6.08 % |
-| Auto Level measurement, per new setting (total ms, spread over ~0.5 s of audio) | 89.09 ms | 182.74 ms |
+| Delay (stereo) | 0.32 % | 0.65 % |
+| Reverb (stereo) | 1.44 % | 2.98 % |
+| IR loader (two 0.3 s IRs blended, stereo) | 2.30 % | 5.34 % |
+| Clarity (dynamic low-mid cut, 100 %) | 0.07 % | 0.15 % |
+| Pick (transient shaper, +100 %) | 0.41 % | 0.82 % |
+| Whole plugin (processBlock, Ambient Swell: everything on) | 3.11 % | 6.29 % |
+| Auto Level measurement, per new setting (total ms, spread over ~0.5 s of audio) | 90.91 ms | 186.27 ms |
 
 Switched-off delay and reverb rest completely once faded out. The compressor's detector keeps running while it's switched off so it can come back in at exactly the right level.
